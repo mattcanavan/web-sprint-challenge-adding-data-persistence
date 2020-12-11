@@ -19,7 +19,11 @@ exports.up = function(knex) {
         table.string("description", 128).notNullable();
         table.string("notes", 128);
         table.boolean("completed").defaultTo("false"); //add back notNullable() if necessary.
-        table.integer("project_id").notNullable(); //tricky tricky
+        table.integer("project_id")
+        .unsigned()
+        .notNullable()
+        .references('id')
+        .inTable('projects');  //tricky tricky
     })
   
 };
