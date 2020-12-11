@@ -5,7 +5,7 @@ exports.up = function(knex) {
         table.increments("id").notNullable();
         table.string("name", 128).notNullable();
         table.string("description", 128);
-        table.boolean("completed").notNullable().defaultTo("false"); //change to string if doesnt work.
+        table.string("completed").defaultTo("false"); //add back notNullable() if necessary.
     })
 
     .createTable("resources", (table) => {
@@ -18,7 +18,8 @@ exports.up = function(knex) {
         table.increments("id").notNullable();
         table.string("description", 128).notNullable();
         table.string("notes", 128);
-        table.boolean("completed").notNullable().defaultTo("false"); //change to string if doesnt work.
+        table.string("completed").defaultTo("false"); //add back notNullable() if necessary.
+        table.integer("project_id").notNullable(); //tricky tricky
     })
   
 };
