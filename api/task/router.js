@@ -9,7 +9,7 @@ const checkForRequiredFields = (req, res, next) => {
 
     if (!req.body.project_id || !req.body.description) {
         //does req have project_id and description?
-        return res.status(404).json({ message: "required field project_id OR description missing in req body." })
+        return res.status(500).json({ message: "required field project_id OR description missing in req body." })
     } else {
         //everything fine? pass back control to POST method
         next();
@@ -25,7 +25,7 @@ const checkIfProjectIdExists = (req, res, next) => {
             next();
         })
         .catch(error => {
-            res.staus(404).json({ message: error.message})
+            return res.status(404).json({ message: error.message})
         })
 
 };
@@ -52,7 +52,7 @@ router.get("/", (req,res) => {
 })
 
 router.post("/", checkForRequiredFields, checkIfProjectIdExists, (req,res) => {
-
+    console.log("hello")
     // add new task to tasks table. description and project_id are requried.
     HelperFuncs.addNewTask(req.body)
     .then(async data => {
