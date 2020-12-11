@@ -22,7 +22,15 @@ router.post("/", (req, res) => {
     .then(async success => {
         //success equals new resource id
         const newResource = await HelperFuncs.getById(success)
-        res.status(201).json(newResource[0]) //collection has length =1, so why not display just that obj.
+
+        if(newResource[0].completed === 0){  //collection always has length = 1
+            return { ...newResource[0], completed: false}
+        } else {
+            return{ ...newResource[0], completed: true}
+        }
+    })
+    .then(data => {
+        res.status(201).json(data)
     })
     .catch(error => {
         res.status(500).json({ message: error.message })

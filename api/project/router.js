@@ -7,8 +7,27 @@ const HelperFuncs = require('./model');
 /// ENDPOINTS
 router.get("/", (req,res) => {
     HelperFuncs.getAllProjects()
-    .then(success => {
-        res.status(200).json(success)
+    .then(data => {
+
+        data.forEach(project => {
+            if (project.completed === 0){
+                project.completed = false;
+            } else {
+                project.completed = true;
+            }
+        })
+        
+        // this works but i dont need a new array returned, so went with forEach
+        // data.map(project => {
+        //     console.log(project.completed)
+        //     if(project.completed === 0){
+        //         project.completed = false;
+        //     } else {
+        //         project.compelted = true;
+        //     }
+        // })
+
+        res.status(200).json(data) //could we make forEach a promie and attach this to another then?
     })
     .catch(error => {
         res.status(500).json({ message: error.message })
@@ -31,7 +50,6 @@ router.post("/", (req,res) => {
     .then(data => {
         res.status(201).json(data)
     })
-
     .catch(error => {
         res.status(500).json({ message: error.message })
     })
