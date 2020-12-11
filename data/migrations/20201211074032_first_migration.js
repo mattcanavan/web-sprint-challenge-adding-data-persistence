@@ -5,7 +5,7 @@ exports.up = function(knex) {
         table.increments("id").notNullable();
         table.string("name", 128).notNullable();
         table.string("description", 128);
-        table.string("completed").defaultTo("false"); //add back notNullable() if necessary.
+        table.boolean("completed").defaultTo("false"); //add back notNullable() if necessary. boolean or string?
     })
 
     .createTable("resources", (table) => {
@@ -18,7 +18,7 @@ exports.up = function(knex) {
         table.increments("id").notNullable();
         table.string("description", 128).notNullable();
         table.string("notes", 128);
-        table.string("completed").defaultTo("false"); //add back notNullable() if necessary.
+        table.boolean("completed").defaultTo("false"); //add back notNullable() if necessary. boolean or string?
         table.integer("project_id").notNullable(); //tricky tricky
     })
   
