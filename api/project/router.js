@@ -21,8 +21,17 @@ router.post("/", (req,res) => {
     .then(async success => {
         //success equals new resource id
         const newProject = await HelperFuncs.getProjectById(success);
-        res.status(201).json(newProject)
+
+        if(newProject[0].completed === 0){
+            return { ...newProject[0], completed: false}
+        } else {
+            return{ ...newProject[0], completed: true}
+        }
     })
+    .then(data => {
+        res.status(201).json(data)
+    })
+
     .catch(error => {
         res.status(500).json({ message: error.message })
     })
