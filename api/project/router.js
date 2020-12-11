@@ -37,18 +37,19 @@ router.get("/", (req,res) => {
 router.post("/", (req,res) => {
     //add new project to projects table. (name required, description and completed optional)
     HelperFuncs.addNewProject(req.body)
-    .then(async success => {
-        //success equals new resource id
-        const newProject = await HelperFuncs.getProjectById(success);
-
-        if(newProject[0].completed === 0){
-            return { ...newProject[0], completed: false}
+    .then(newResourceId => {
+        //addNewProject returns new resource id
+        return HelperFuncs.getProjectById(newResourceId);
+    })
+    .then(success => {
+        if(success[0].completed === 0){
+            return { ...success[0], completed: false}
         } else {
-            return{ ...newProject[0], completed: true}
+            return{ ...success[0], completed: true}
         }
     })
-    .then(data => {
-        res.status(201).json(data)
+    .then(results => {
+        res.status(201).json(results)
     })
     .catch(error => {
         res.status(500).json({ message: error.message })

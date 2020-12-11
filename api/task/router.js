@@ -2,6 +2,33 @@
 const express = require('express');
 const router = express.Router();
 const HelperFuncs = require('./model');
+const ProjectHelperFuncs = require('../project/model')
+
+/// MIDDLEWARE
+const checkForRequiredFields = (req, res, next) => {
+
+    if (!req.body.project_id || !req.body.description) {
+        //does req have project_id and description?
+        return res.status(404).json({ message: "required field project_id OR description missing in req body." })
+    } else {
+        //everything fine? pass back control to POST method
+        next();
+    }
+};
+
+     
+const checkIfProjectIdExists = (req, res, next) => {
+
+    ProjectHelperFuncs.getProjectById(req.body.project_id)
+        .then(success => {
+            //since the project_id exists, pass control back to POST method to add new task
+            next();
+        })
+        .catch(error => {
+            res.staus(404).json({ message: error.message})
+        })
+
+};
 
 
 /// ENDPOINTS
@@ -24,19 +51,7 @@ router.get("/", (req,res) => {
     })
 })
 
-router.post("/", (req,res) => {
-    
-    if(!req.body.project_id || !req.body.description){
-        res.status(404).json({ message: "required field project_id OR description missing in req body."})
-    } else {
-        HelperFuncs.getTaskById(req.body.projct_id)
-        .then(data => {
-            console.log(data)
-        })
-        .catch(error => {
-            res.status(404).json( { message: `project_id ${req.body.project_id} does not exist.`})
-        })
-    }
+router.post("/", checkForRequiredFields, checkIfProjectIdExists, (req,res) => {
 
     // add new task to tasks table. description and project_id are requried.
     HelperFuncs.addNewTask(req.body)
