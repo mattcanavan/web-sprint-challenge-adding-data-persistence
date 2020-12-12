@@ -6,16 +6,9 @@ module.exports = {
       return db("projects").select("*")
     },
 
-    async getProjectById(id) {
-
-      const results = await db("projects").select("*").where({ id: id });
-
-      if(results.length > 0){
-        return results
-      } else{
-        return Promise.reject(new Error('project with that id does not exist (im inside project model)'))
-      }
-
+    getProjectById(id) {
+      //if id does not exist, empty array is returned
+      return db("projects").select("*").where({ id: id });
     },
 
     addNewProject(newProjectObj) {

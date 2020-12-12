@@ -11,22 +11,25 @@ const checkForRequiredFields = (req, res, next) => {
         //does req have project_id and description?
         return res.status(500).json({ message: "required field project_id OR description missing in req body." })
     } else {
-        //everything fine? pass back control to POST method
+        //everything fine? continue with request
         next();
     }
 };
-
      
 const checkIfProjectIdExists = (req, res, next) => {
 
+    //does the provided project_id exists? lets try and find it
     ProjectHelperFuncs.getProjectById(req.body.project_id)
-        .then(success => {
-            //since the project_id exists, pass control back to POST method to add new task
+    .then(results => {
+        if(results.length > 0){
             next();
-        })
-        .catch(error => {
-            return res.status(404).json({ message: error.message})
-        })
+        } else{
+            throw new Error(`project with id ${req.body.project_id} does not exist.`) // is this ok??
+        }
+    })
+    .catch(error => {
+        res.status(500).json({ message: error.message }) //general server error
+    })
 
 };
 
@@ -36,6 +39,7 @@ router.get("/", (req,res) => {
     HelperFuncs.getAllTasks()
     .then(success => {
 
+        //converting boolean values to true/false
         success.forEach(task => {
             if (task.completed === 0){
                 task.completed = false;
@@ -44,6 +48,7 @@ router.get("/", (req,res) => {
             }
         })
 
+        //return all tasks
         res.status(200).json(success)
     })
     .catch(error => {
@@ -52,21 +57,24 @@ router.get("/", (req,res) => {
 })
 
 router.post("/", checkForRequiredFields, checkIfProjectIdExists, (req,res) => {
-    console.log("hello")
-    // add new task to tasks table. description and project_id are requried.
-    HelperFuncs.addNewTask(req.body)
-    .then(async data => {
-        //data is the id of newly added task
-        const newTask = await HelperFuncs.getTaskById(data)
 
-        if(newTask[0].completed === 0){  //collection always has length = 1
-            return { ...newTask[0], completed: false}
+    //since required fields and project_id exist, let's add new task
+
+    HelperFuncs.addNewTask(req.body)
+    .then(newTaskId => {
+        //getting new task to dispaly for user
+        return HelperFuncs.getTaskById(newTaskId)
+    })
+    .then(newTask => {
+        //converting boolean values to true/false
+        if(newTask[0].completed === 0){  
+            return { ...newTask[0], completed: false} //newTask collection always has length = 1
         } else {
             return{ ...newTask[0], completed: true}
         }
-
     })
     .then(success => {
+        //display newTask
         res.status(201).json(success)
     })
     .catch(error => {
