@@ -11,9 +11,11 @@ module.exports = {
     },
 
     addNewResource(resourceObj){
-      const { name, description } = resourceObj;
-
-      return db("resources").insert({ name: name, description: description})
+      return db("resources").insert({
+        //key: column_name, value: value
+        name: resourceObj.name,
+        description: resourceObj.description
+        })
     }
     
   }

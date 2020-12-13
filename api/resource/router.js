@@ -17,20 +17,29 @@ router.get("/", (req, res) => {
 })
 
 router.post("/", (req, res) => {
-    //post a new resource to resources table (unique name, deescription optional)
-    HelperFuncs.addNewResource(req.body)
-    .then(async success => {
-        //success equals new resource id
-        const newResource = await HelperFuncs.getById(success)
 
-        if(newResource[0].completed === 0){  //collection always has length = 1
-            return { ...newResource[0], completed: false}
+    const newResourceObj = {
+        name: req.body.name,                //required
+        description: req.body.description   //optional
+    }
+
+    //post a new resource to resources table
+    HelperFuncs.addNewResource(newResourceObj)
+    .then(newResourceID => {
+        //retrieve new resource from db by id
+        return HelperFuncs.getById(newResourceID)
+    })
+    .then(resource => {
+        //converting boolean values to true/false
+        if(resource[0].completed === 0){  
+            return { ...resource[0], completed: false} //resource collection always has length = 1
         } else {
-            return{ ...newResource[0], completed: true}
+            return{ ...resource[0], completed: true}
         }
     })
-    .then(data => {
-        res.status(201).json(data)
+    .then(success => {
+        //display new resource
+        res.status(201).json(success)
     })
     .catch(error => {
         res.status(500).json({ message: error.message })
