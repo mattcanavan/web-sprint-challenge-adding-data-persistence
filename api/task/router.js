@@ -58,9 +58,15 @@ router.get("/", (req,res) => {
 
 router.post("/", checkForRequiredFields, checkIfProjectIdExists, (req,res) => {
 
-    //since required fields and project_id exist, let's add new task
+    const newTaskObj = {
+        description: req.body.description,  //required
+        notes: req.body.notes,
+        completed: !req.body.completed ? false : req.body.completed, //if null, default to false.
+        project_id : req.body.project_id    //required
+    }
 
-    HelperFuncs.addNewTask(req.body)
+    //since required fields and project_id exist, let's add new task
+    HelperFuncs.addNewTask(newTaskObj)
     .then(newTaskId => {
         //getting new task to dispaly for user
         return HelperFuncs.getTaskById(newTaskId)
