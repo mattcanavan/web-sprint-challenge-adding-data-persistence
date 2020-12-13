@@ -24,7 +24,8 @@ const checkIfProjectIdExists = (req, res, next) => {
         if(results.length > 0){
             next();
         } else{
-            throw new Error(`project with id ${req.body.project_id} does not exist.`) // is this ok??
+            res.status(404).json({ message: `project with id ${req.body.project_id} does not exist.`})
+            // throw new Error(`project with id ${req.body.project_id} does not exist.`) // is this ok??
         }
     })
     .catch(error => {
