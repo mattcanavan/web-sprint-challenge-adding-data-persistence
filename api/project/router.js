@@ -35,20 +35,29 @@ router.get("/", (req,res) => {
 })
 
 router.post("/", (req,res) => {
-    //add new project to projects table. (name required, description and completed optional)
-    HelperFuncs.addNewProject(req.body)
-    .then(newResourceId => {
-        //addNewProject returns new resource id
-        return HelperFuncs.getProjectById(newResourceId);
+
+    const newProjectObj = {
+        name: req.body.name,                //required
+        description: req.body.description,  //optional
+        completed: !req.body.completed ? false : req.body.completed // if blank, set to false
+    }
+
+    //add new project to projects table.
+    HelperFuncs.addNewProject(newProjectObj)
+    .then(newProjectId => {
+        //addNewProject returns new project id
+        return HelperFuncs.getProjectById(newProjectId);
     })
-    .then(success => {
-        if(success[0].completed === 0){
-            return { ...success[0], completed: false}
+    .then(project => {
+        //converting boolean values to true/false
+        if(project[0].completed === 0){
+            return { ...project[0], completed: false}
         } else {
-            return{ ...success[0], completed: true}
+            return{ ...project[0], completed: true}
         }
     })
     .then(results => {
+        //returns new project
         res.status(201).json(results)
     })
     .catch(error => {

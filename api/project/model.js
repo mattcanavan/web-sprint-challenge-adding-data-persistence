@@ -12,11 +12,12 @@ module.exports = {
     },
 
     addNewProject(newProjectObj) {
-      let { name, description, completed } = newProjectObj;
-
-      if(!completed) { completed = false} //gotta be a better way
-
-      return db("projects").insert({ name: name, description: description, completed: completed})
+      return db("projects").insert({
+        //key: column_name; value: value.
+         name: newProjectObj.name, 
+         description: newProjectObj.description, 
+         completed: newProjectObj.completed
+        })
     }
     
   }
